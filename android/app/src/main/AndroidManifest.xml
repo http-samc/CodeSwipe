@@ -10,7 +10,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CodeSwipe">
         <activity
-            android:name=".MainActivity"
+            android:name=".HomeActivity"
+            android:exported="true" />
+        <activity
+            android:name=".AuthActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
