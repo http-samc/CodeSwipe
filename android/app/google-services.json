@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "269523248197",
+    "project_id": "codeswipe-14cd5",
+    "storage_bucket": "codeswipe-14cd5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:269523248197:android:ffce055235c315faf4ef2c",
+        "android_client_info": {
+          "package_name": "dev.smrth.www.codeswipe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "269523248197-2vjn9fau5lnqobceog6vpnp774p8dlbg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSH_NTRRLBFT1BqkpECPtS4zrWMLcr2kY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "269523248197-2vjn9fau5lnqobceog6vpnp774p8dlbg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

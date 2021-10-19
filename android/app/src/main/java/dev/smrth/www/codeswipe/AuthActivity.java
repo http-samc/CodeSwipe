@@ -47,7 +47,9 @@ public class AuthActivity extends AppCompatActivity {
                     Toast.makeText(AuthActivity.this, "Enter an email", Toast.LENGTH_SHORT).show();
                 }else{
                     OAuthProvider.Builder provider = OAuthProvider.newBuilder("github.com");
+
                     provider.addCustomParameter("login", email);
+
 
                     List<String> scopes =
                             new ArrayList<String>() {
