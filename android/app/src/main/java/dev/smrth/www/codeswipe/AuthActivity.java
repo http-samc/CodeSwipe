@@ -34,7 +34,6 @@ public class AuthActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        inputEmail = findViewById(R.id.emailEditText);
         btnLogin = findViewById(R.id.signInButton);
         mAuth = FirebaseAuth.getInstance();
         fUser = mAuth.getCurrentUser();
@@ -42,67 +41,59 @@ public class AuthActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String email = inputEmail.getText().toString();
-                if(TextUtils.isEmpty(email)){
-                    Toast.makeText(AuthActivity.this, "Enter an email", Toast.LENGTH_SHORT).show();
-                }else{
-                    OAuthProvider.Builder provider = OAuthProvider.newBuilder("github.com");
+                OAuthProvider.Builder provider = OAuthProvider.newBuilder("github.com");
 
-                    provider.addCustomParameter("login", email);
-
-
-                    List<String> scopes =
-                            new ArrayList<String>() {
-                                {
-                                    add("user:email");
-                                }
-                            };
-                    provider.setScopes(scopes);
+                List<String> scopes =
+                        new ArrayList<String>() {
+                            {
+                                add("user:email");
+                            }
+                        };
+                provider.setScopes(scopes);
 
 
-                    Task<AuthResult> pendingResultTask = mAuth.getPendingAuthResult();
-                    if (pendingResultTask != null) {
-                        // There's something already here! Finish the sign-in for your user.
-                        pendingResultTask
-                                .addOnSuccessListener(
-                                        new OnSuccessListener<AuthResult>() {
-                                            @Override
-                                            public void onSuccess(AuthResult authResult) {
-                                                // User is signed in.
-                                                // IdP data available in
-                                                // authResult.getAdditionalUserInfo().getProfile().
-                                                // The OAuth access token can also be retrieved:
-                                                // authResult.getCredential().getAccessToken().
-                                            }
-                                        })
-                                .addOnFailureListener(
-                                        new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Toast.makeText(AuthActivity.this,""+e.getMessage(),Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                    } else {
-                        mAuth
-                                .startActivityForSignInWithProvider(/* activity= */ AuthActivity.this, provider.build())
-                                .addOnSuccessListener(
-                                        new OnSuccessListener<AuthResult>() {
-                                            @Override
-                                            public void onSuccess(AuthResult authResult) {
-                                                openNextActivity();
-                                            }
-                                        })
-                                .addOnFailureListener(
-                                        new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Toast.makeText(AuthActivity.this,""+e.getMessage(),Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-
-                    }
+                Task<AuthResult> pendingResultTask = mAuth.getPendingAuthResult();
+                if (pendingResultTask != null) {
+                    // There's something already here! Finish the sign-in for your user.
+                    pendingResultTask
+                            .addOnSuccessListener(
+                                    new OnSuccessListener<AuthResult>() {
+                                        @Override
+                                        public void onSuccess(AuthResult authResult) {
+                                            // User is signed in.
+                                            // IdP data available in
+                                            // authResult.getAdditionalUserInfo().getProfile().
+                                            // The OAuth access token can also be retrieved:
+                                            // authResult.getCredential().getAccessToken().
+                                        }
+                                    })
+                            .addOnFailureListener(
+                                    new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(AuthActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                } else {
+                    mAuth
+                            .startActivityForSignInWithProvider(/* activity= */ AuthActivity.this, provider.build())
+                            .addOnSuccessListener(
+                                    new OnSuccessListener<AuthResult>() {
+                                        @Override
+                                        public void onSuccess(AuthResult authResult) {
+                                            openNextActivity();
+                                        }
+                                    })
+                            .addOnFailureListener(
+                                    new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(AuthActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
 
                 }
+
             }
         });
 
