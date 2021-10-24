@@ -24,7 +24,6 @@ import java.util.List;
 
 public class AuthActivity extends AppCompatActivity {
 
-    EditText inputEmail;
     Button btnLogin;
     FirebaseAuth mAuth;
     FirebaseUser fUser;
