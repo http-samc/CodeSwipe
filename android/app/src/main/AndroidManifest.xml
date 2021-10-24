@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CodeSwipe">
         <activity
+            android:name=".PostActivity"
+            android:exported="true" />
+        <activity
             android:name=".HomeActivity"
             android:exported="true" />
         <activity
