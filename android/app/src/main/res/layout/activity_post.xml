@@ -59,6 +59,7 @@
         android:layout_marginHorizontal="15dp"
         android:layout_marginTop="5dp"
         android:hint="POST"
+        android:onClick="savePost"
         android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

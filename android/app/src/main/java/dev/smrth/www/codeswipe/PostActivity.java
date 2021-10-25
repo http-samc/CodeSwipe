@@ -4,36 +4,36 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.SetOptions;
 import java.util.HashMap;
-import java.util.UUID;
+import java.util.Map;
+
 
 public class PostActivity extends AppCompatActivity {
 
 
     EditText mLang, mSnip, mDesc;
-    Button mPost;
-    FirebaseFirestore db;
-    DatabaseReference UsersRef, PostsRef;
-    String saveCurrentDate, saveCurrentTime, postRandomName, current_user_id;
-    FirebaseAuth mAuth;
+    private static final String TAG = "PostActivity";
+    private static final String KEY_LANGUAGE = "language";
+    private static final String KEY_DESCRIPTION = "description";
+    private static final String KEY_SNIPPET = "snippet";
+
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    DocumentReference postRef = db.document("Posts/Each Post");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,78 +43,69 @@ public class PostActivity extends AppCompatActivity {
         mLang = findViewById(R.id.edit_language);
         mSnip = findViewById(R.id.edit_snip);
         mDesc = findViewById(R.id.edit_desc);
-        mPost = findViewById(R.id.post_btn);
-
-        db = FirebaseFirestore.getInstance();
-        mAuth = FirebaseAuth.getInstance();
-        current_user_id = mAuth.getCurrentUser().getUid();
-        UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
-        PostsRef = FirebaseDatabase.getInstance().getReference().child("Posts");
-
-        mPost.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String language = mLang.getText().toString();
-                String snippet = mSnip.getText().toString();
-                String description = mDesc.getText().toString();
-
-
-                saveToFirestore(language, snippet, description);
-
-            }
-        });
 
     }
 
 
-    private void saveToFirestore(String language, String snippet, String description) {
-
-        Calendar calFordDate = Calendar.getInstance();
-        SimpleDateFormat currentDate = new SimpleDateFormat("dd-MMMM-yyyy");
-        saveCurrentDate = currentDate.format(calFordDate.getTime());
-
-        Calendar calFordTime = Calendar.getInstance();
-        SimpleDateFormat currentTime = new SimpleDateFormat("HH:mm");
-        saveCurrentTime = currentTime.format(calFordTime.getTime());
-
-        postRandomName = saveCurrentDate + saveCurrentTime;
-
-        UsersRef.child(current_user_id).addValueEventListener(new ValueEventListener() {
+    @Override
+    protected void onStart() {
+        super.onStart();
+        postRef.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    String userFullName = dataSnapshot.child("fullname").getValue().toString();
-                    String userProfileImage = dataSnapshot.child("profileimage").getValue().toString();
-
-
-                    HashMap<String, Object> map = new HashMap<>();
-                    map.put("id", current_user_id);
-                    map.put("date", saveCurrentDate);
-                    map.put("time", saveCurrentTime);
-                    map.put("language", language);
-                    map.put("code", snippet);
-                    map.put("description", description);
-                    PostsRef.child(postRandomName).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(PostActivity.this, "Success!", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(PostActivity.this, "Error Occured", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (e != null) {
+                    Toast.makeText(PostActivity.this, "Error while loading!", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, e.toString());
+                    return;
                 }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
-
-
     }
+
+    public void savePost(View v) {
+        String language = mLang.getText().toString();
+        String snippet = mSnip.getText().toString();
+        String description = mDesc.getText().toString();
+        Map<String, Object> post = new HashMap<>();
+        post.put("timestamp", FieldValue.serverTimestamp());
+        post.put(KEY_LANGUAGE, language);
+        post.put(KEY_SNIPPET, snippet);
+        post.put(KEY_DESCRIPTION, description);
+        postRef.collection("Each Post")
+                .add(post)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding post", e);
+                    }
+                });
+    }
+
+    /*
+    public void updateDescription(View v) {
+        String description = mDesc.getText().toString();
+        //Map<String, Object> note = new HashMap<>();
+        //note.put(KEY_DESCRIPTION, description);
+        //noteRef.set(note, SetOptions.merge());
+        postRef.update(KEY_DESCRIPTION, description);
+    }
+    public void deleteDescription(View v) {
+        //Map<String, Object> note = new HashMap<>();
+        //note.put(KEY_DESCRIPTION, FieldValue.delete());
+        //noteRef.update(note);
+        postRef.update(KEY_DESCRIPTION, FieldValue.delete());
+    }
+    public void deletePost(View v) {
+        postRef.delete();
+    }
+
+    //maybe need transactions or batched writes later? idk will need it for profile activity or smth
+     */
+
 }
