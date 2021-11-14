@@ -45,6 +45,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,9 +71,10 @@ public class HomeActivity extends AppCompatActivity {
                 Context.MODE_PRIVATE
         );
 
-        // We can assume that if this activity is loaded, auth was successful
-        this.token = sp.getString(AuthActivity.tokenKey, "");
-        this.username = sp.getString(AuthActivity.usernameKey, "");
+        // We can assume that if this activity is loaded =>
+        // auth was successful => these exist
+        HomeActivity.token = sp.getString(AuthActivity.tokenKey, "");
+        HomeActivity.username = sp.getString(AuthActivity.usernameKey, "");
 
         this.cue = Volley.newRequestQueue(this);
 
@@ -98,7 +101,12 @@ public class HomeActivity extends AppCompatActivity {
         shareBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                share();
+                try {
+                    share();
+                }
+                catch (Exception e) {
+                    Toast.makeText(getApplicationContext(), "There's no post to share!", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
@@ -134,26 +142,19 @@ public class HomeActivity extends AppCompatActivity {
         // Render user info
         addUserInfo();
 
+        // Create feed of unseen posts
         getFeed();
     }
 
-    public void share() {
+    // Share current post to social
+    public void share() throws Exception {
         CardStackView postsView = findViewById(R.id.postsView);
         CardStackLayoutManager lm = (CardStackLayoutManager) postsView.getLayoutManager();
         PostsAdapter rva = (PostsAdapter) postsView.getAdapter();
 
-        int pos;
-        try {
-            pos = lm.getTopPosition();
-            if (pos < 0)
-                throw new Exception();
-        }
-        catch (Exception e) {
-            Toast.makeText(this, "There's no post to share!", Toast.LENGTH_LONG).show();
-            return;
-        }
-
+        int pos = lm.getTopPosition();
         QueryDocumentSnapshot doc = rva.getPost(pos);
+
         String msg = "Check out this awesome " + doc.get("language") + " snippet by "
                 + doc.get("author") + " on CodeSwipe:\n\n" + doc.get("snippet");
 
@@ -166,6 +167,7 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(shareIntent);
     }
 
+    // Add most recently swiped post to History
     public void addToHistory(QueryDocumentSnapshot doc) {
         try {
             JSONArray history = new JSONArray(
@@ -187,6 +189,7 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
+    // Follow the author of the most recently swiped post
     public void followUser(String user) {
 
         String url = "https://api.github.com/user/following/" + user;
@@ -222,6 +225,7 @@ public class HomeActivity extends AppCompatActivity {
         this.cue.add(req);
     }
 
+    // Get a feed of posts the user hasn't seen
     public void getFeed() {
         CardStackView postsView = findViewById(R.id.postsView);
         CardStackListener listener = new CardStackListener() {
@@ -246,8 +250,6 @@ public class HomeActivity extends AppCompatActivity {
                 }
             }
 
-            // I think the author of this library didn't know how to make
-            // the interface methods optional. . . not much we can do besides have these empty defs
             public void onCardRewound() {}
             public void onCardCanceled() {}
             public void onCardAppeared(View view, int position) {}
@@ -264,19 +266,26 @@ public class HomeActivity extends AppCompatActivity {
 
         postsView.setLayoutManager(layoutManager);
 
-        posts.whereEqualTo("author", this.username) // FIXME change to "whereNotEqualTo" in production to get OTHER ppls posts
+        posts.whereNotEqualTo("author", this.username)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-                            QueryDocumentSnapshot[] posts = new QueryDocumentSnapshot[task.getResult().size()];
-                            int i = 0;
+                            // Create an arraylist (dynamically sized b/c we don't know len)
+                            // of posts we haven't viewed
+                            ArrayList<QueryDocumentSnapshot> posts = new ArrayList<>();
                             for (QueryDocumentSnapshot doc : task.getResult()) {
-                                posts[i] = doc;
-                                i++;
+                                List<String> viewedBy = (List<String>) doc.get("viewedBy");
+                                if (!viewedBy.contains(HomeActivity.username))
+                                    posts.add(doc);
                             }
-                            postsView.setAdapter(new PostsAdapter(posts));
+
+                            // Convert to primitive array and use it to set our stack adapter
+                            QueryDocumentSnapshot[] postsArray = new QueryDocumentSnapshot[posts.size()];
+                            for (int i = 0; i < posts.size(); i++)
+                                postsArray[i] = (QueryDocumentSnapshot) posts.get(i);
+                            postsView.setAdapter(new PostsAdapter(postsArray));
                         }
                         else {
                             Log.w("CHIT", task.getException().toString());
@@ -285,14 +294,15 @@ public class HomeActivity extends AppCompatActivity {
                 });
     }
 
+    // Render in the user's avatar
     public void addUserInfo() {
         ImageView pfpIV = findViewById(R.id.pfpView);
         String avatarPngUrl = String.format("https://avatars.githubusercontent.com/%s?size=80", this.username);
         Picasso.get().load(avatarPngUrl).transform(new CircleTransform()).into(pfpIV);
     }
 
+    // Tell Firestore that the user has seen the most recently swiped post
     public void markPostAsRead(QueryDocumentSnapshot doc) {
-
         // Getting viewedBy list and adding current user to it
         List<String> viewedBy = (List<String>) doc.get("viewedBy");
         //viewedBy.add(HomeActivity.username);
