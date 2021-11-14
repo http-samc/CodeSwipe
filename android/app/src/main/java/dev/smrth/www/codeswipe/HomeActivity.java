@@ -101,7 +101,7 @@ public class HomeActivity extends AppCompatActivity {
 
     public void getFeed() {
         CardStackView postsView = findViewById(R.id.postsView);
-        PostsAdapter postsAdapter = new PostsAdapter(getApplicationContext(), 0);
+        //PostsAdapter postsAdapter = new PostsAdapter(getApplicationContext(), 0);
 
         posts.whereEqualTo("author", this.username) // FIXME change to "whereNotEqualTo" in production to get OTHER ppls posts
                 .get()
@@ -109,11 +109,13 @@ public class HomeActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+                            QueryDocumentSnapshot[] posts = new QueryDocumentSnapshot[task.getResult().size()];
+                            int i = 0;
                             for (QueryDocumentSnapshot doc : task.getResult()) {
-                                Log.w("CHIT", doc.getId() + " => " + doc.get("author"));
-                                postsAdapter.add(doc);
+                                posts[i] = doc;
+                                i++;
                             }
-                            postsView.setAdapter(postsAdapter);
+                            postsView.setAdapter(new PostsAdapter(posts));
                         }
                         else {
                             Log.w("CHIT", task.getException().toString());

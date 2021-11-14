@@ -1,38 +1,65 @@
 package dev.smrth.www.codeswipe;
 
-import android.content.Context;
+
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
-public class PostsAdapter extends ArrayAdapter<QueryDocumentSnapshot> {
+public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> {
 
-    public PostsAdapter(Context context, int id) {
-        super(context, id);
+    private QueryDocumentSnapshot[] posts;
+
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+        TextView snippet, desc, lang, date, author;
+
+        public ViewHolder(View view) {
+            super(view);
+
+            snippet = view.findViewById(R.id.postSnippet);
+            desc = view.findViewById(R.id.postDesc);
+            date = view.findViewById(R.id.postDate);
+            lang = view.findViewById(R.id.postLang);
+            author = view.findViewById(R.id.postAuthor);
+
+        }
+
+    }
+
+    public PostsAdapter(QueryDocumentSnapshot[] dataSet) {
+        posts = dataSet;
     }
 
     @Override
-    public View getView(int position, final View v, ViewGroup parent) {
+    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        View view = LayoutInflater.from(viewGroup.getContext())
+                .inflate(R.layout.post_view, viewGroup, false);
 
-        QueryDocumentSnapshot doc = getItem(position);
+        return new ViewHolder(view);
+    }
 
-        TextView snippet = (TextView) v.findViewById(R.id.postSnippet);
-        TextView author = (TextView) v.findViewById(R.id.postAuthor);
-        TextView lang = (TextView) v.findViewById(R.id.postLang);
-        TextView date = (TextView) v.findViewById(R.id.postDate);
-        TextView desc = (TextView) v.findViewById(R.id.postDesc);
+    @Override
+    public void onBindViewHolder(ViewHolder v, final int position) {
 
-        // Make snippet a codeview and use lang
-        snippet.setText(doc.get("snippet").toString());
-        author.setText(doc.get("author").toString());
-        lang.setText(doc.get("language").toString());
-        date.setText(doc.get("date").toString());
-        desc.setText(doc.get("description").toString());
+        QueryDocumentSnapshot doc = posts[position];
 
-        return v;
+        v.author.setText(doc.get("author").toString());
+        v.snippet.setText(doc.get("snippet").toString());
+        v.desc.setText(doc.get("description").toString());
+        v.date.setText(doc.get("timestamp").toString());
+        v.lang.setText(doc.get("language").toString());
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return posts.length;
     }
 }
-
