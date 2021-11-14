@@ -245,7 +245,6 @@ public class HomeActivity extends AppCompatActivity {
                 {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // TODO Auto-generated method stub
                         Log.e("ERROR","error => "+error.toString());
                     }
                 }
@@ -304,7 +303,7 @@ public class HomeActivity extends AppCompatActivity {
         postsView.setLayoutManager(layoutManager);
 
         // Start off by getting all the posts we didn't make
-        posts.whereEqualTo("author", HomeActivity.username) // FIXME production
+        posts.whereNotEqualTo("author", HomeActivity.username)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -315,7 +314,7 @@ public class HomeActivity extends AppCompatActivity {
                             ArrayList<QueryDocumentSnapshot> posts = new ArrayList<>();
                             for (QueryDocumentSnapshot doc : task.getResult()) {
                                 List<String> viewedBy = (List<String>) doc.get("viewedBy");
-                                if (viewedBy.contains(HomeActivity.username)) // FIXME production
+                                if (!viewedBy.contains(HomeActivity.username))
                                     posts.add(doc);
                             }
 

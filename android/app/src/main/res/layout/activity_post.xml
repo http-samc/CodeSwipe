@@ -33,6 +33,7 @@
             android:layout_height="50sp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp"
+            android:background="@drawable/rounded_light"
             android:prompt="@string/lang_hint"
             android:spinnerMode="dialog" />
 
@@ -43,15 +44,15 @@
             android:layout_gravity="center"
             android:layout_marginHorizontal="15dp"
             android:layout_marginTop="20dp"
-            android:background="@drawable/rounded_borders"
+            android:background="@drawable/rounded_light"
             android:ems="10"
             android:fontFamily="monospace"
             android:gravity="start"
             android:hint="Paste your snippet"
             android:inputType="textMultiLine"
             android:padding="10dp"
-            android:textColor="@color/regularText"
-            android:textColorHint="@color/regularText"
+            android:textColor="@color/onBackground"
+            android:textColorHint="@color/onBackground"
             android:textSize="10sp" />
 
         <EditText
@@ -61,15 +62,15 @@
             android:layout_gravity="center"
             android:layout_marginHorizontal="15dp"
             android:layout_marginTop="20dp"
-            android:background="@drawable/rounded_borders"
+            android:background="@drawable/rounded_light"
             android:ems="10"
             android:fontFamily="@font/montserrat"
             android:gravity="start"
             android:hint="Post description (optional)"
             android:inputType="textMultiLine"
             android:padding="10dp"
-            android:textColor="@color/regularText"
-            android:textColorHint="@color/regularText" />
+            android:textColor="@color/onBackground"
+            android:textColorHint="@color/onBackground" />
 
         <EditText
             android:id="@+id/repoName"
@@ -78,14 +79,14 @@
             android:layout_gravity="center"
             android:layout_marginHorizontal="15dp"
             android:layout_marginTop="20dp"
-            android:background="@drawable/rounded_borders"
+            android:background="@drawable/rounded_light"
             android:ems="10"
             android:fontFamily="@font/montserrat"
             android:gravity="start"
             android:hint="GitHub Repo Name (optional)"
             android:padding="10dp"
-            android:textColor="@color/regularText"
-            android:textColorHint="@color/regularText" />
+            android:textColor="@color/onBackground"
+            android:textColorHint="@color/onBackground" />
 
         <Button
             android:id="@+id/postBtn"

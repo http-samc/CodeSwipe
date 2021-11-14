@@ -6,6 +6,4 @@
         <item name="android:textSize">14sp</item>
         <item name="android:paddingLeft">20dp</item>
     </style>
-    <style name="regBtn">
-    </style>
 </resources>

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="380dp"
     android:layout_height="530dp"
-    android:background="@drawable/rounded_borders">
+    android:background="@drawable/rounded_corner_with_border">
 
     <com.pddstudio.highlightjs.HighlightJsView
         android:id="@+id/postSnippet"
