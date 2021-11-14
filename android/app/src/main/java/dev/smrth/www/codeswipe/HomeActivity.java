@@ -162,6 +162,7 @@ public class HomeActivity extends AppCompatActivity {
         Intent shareIntent = Intent.createChooser(sendIntent, null);
         startActivity(shareIntent);
     }
+
     public void addToHistory(QueryDocumentSnapshot doc) {
         try {
             JSONArray history = new JSONArray(
@@ -184,11 +185,9 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void followUser(String user) {
-        user = "adubatta";
-        //RequestQueue queue = Volley.newRequestQueue(this);
+
         String url = "https://api.github.com/user/following/" + user;
 
-        // Change this to a GET to my server that does the work (provide token, user)
         StringRequest req = new StringRequest(Request.Method.PUT, url,
                 new Response.Listener<String>()
                 {
@@ -212,7 +211,7 @@ public class HomeActivity extends AppCompatActivity {
                 Map<String, String>  params = new HashMap<String, String>();
 
                 params.put("Accept", "application/vnd.github.v3+json");
-                params.put("Authorization", "token" + HomeActivity.token);
+                params.put("Authorization", "token " + HomeActivity.token);
 
                 return params;
             }
@@ -241,7 +240,7 @@ public class HomeActivity extends AppCompatActivity {
                 }
             }
 
-            // FIXME I think the author of this library didn't know how to make
+            // I think the author of this library didn't know how to make
             // the interface methods optional. . . not much we can do besides have these empty defs
             public void onCardRewound() {}
             public void onCardCanceled() {}
@@ -250,7 +249,13 @@ public class HomeActivity extends AppCompatActivity {
             public void onCardDragging(Direction direction, float ratio) {}
 
         };
+
+        // Config layout manager
         CardStackLayoutManager layoutManager = new CardStackLayoutManager(getApplicationContext(), listener);
+        layoutManager.setDirections(Direction.HORIZONTAL);
+        layoutManager.setCanScrollHorizontal(true);
+        layoutManager.setCanScrollVertical(false);
+
         postsView.setLayoutManager(layoutManager);
 
         posts.whereEqualTo("author", this.username) // FIXME change to "whereNotEqualTo" in production to get OTHER ppls posts

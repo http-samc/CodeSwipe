@@ -6,16 +6,14 @@
     android:layout_height="450dp"
     android:background="@drawable/rounded_borders">
 
-    <TextView
+    <com.pddstudio.highlightjs.HighlightJsView
         android:id="@+id/postSnippet"
         android:layout_width="300dp"
         android:layout_height="275dp"
-        android:layout_marginStart="5dp"
         android:layout_marginTop="10dp"
-        android:inputType="textMultiLine"
+        android:background="@drawable/rounded_borders"
         android:padding="10dp"
-        android:text="snippet"
-        android:textColor="@color/regularText"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

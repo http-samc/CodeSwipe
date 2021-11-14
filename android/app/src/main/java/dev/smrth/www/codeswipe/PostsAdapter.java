@@ -12,6 +12,14 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.pddstudio.highlightjs.HighlightJsView;
+import com.pddstudio.highlightjs.models.Language;
+
+import java.util.Locale;
+
+import io.github.kbiakov.codeview.CodeView;
+import io.github.kbiakov.codeview.highlight.ColorTheme;
+import io.github.kbiakov.codeview.highlight.ColorThemeData;
 
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> {
 
@@ -19,7 +27,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView snippet, desc, lang, author;
+        HighlightJsView snippet;
+        TextView desc, lang, author;
 
         public ViewHolder(View view) {
             super(view);
@@ -28,6 +37,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             desc = view.findViewById(R.id.postDesc);
             lang = view.findViewById(R.id.postLang);
             author = view.findViewById(R.id.postAuthor);
+
+            snippet.setHighlightLanguage(Language.AUTO_DETECT);
 
             author.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -70,7 +81,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         }
 
         v.author.setText(author);
-        v.snippet.setText(doc.get("snippet").toString());
+        v.snippet.setSource(doc.get("snippet").toString());
         v.desc.setText(doc.get("description").toString());
         v.lang.setText(doc.get("language").toString());
 
