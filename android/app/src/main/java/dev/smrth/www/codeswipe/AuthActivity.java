@@ -36,6 +36,7 @@ public class AuthActivity extends AppCompatActivity {
 
     static final String tokenKey = "GITHUB_OAUTH_TOKEN";
     static final String usernameKey = "GITHUB_USERNAME";
+    static final String historyKey = "HISTORY";
 
     static final String PREFERENCES = "CodeSwipePreferences";
 
@@ -56,7 +57,7 @@ public class AuthActivity extends AppCompatActivity {
                 List<String> scopes =
                         new ArrayList<String>() {
                             {
-                                add("user:email");
+                                add("user");
                             }
                         };
                 provider.setScopes(scopes);

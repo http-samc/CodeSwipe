@@ -84,9 +84,18 @@ public class PostActivity extends AppCompatActivity {
         String description = mDesc.getText().toString();
         String repoName = mRepo.getText().toString();
 
+        // Check for null snippet (lang will always be selected)
         if (snippet.equals("")) {
             Toast.makeText(this, "Please enter a snippet.", Toast.LENGTH_LONG).show();
             return;
+        }
+
+        // Check for excessive description
+        if (description.length() >= 120) {
+            Toast.makeText(
+                    this, "Your description must be under 120 characters (current: " + description.length() + ")",
+                    Toast.LENGTH_LONG
+            ).show();
         }
 
         // Getting username to add to author attr

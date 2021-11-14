@@ -3,19 +3,28 @@ package dev.smrth.www.codeswipe;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -24,13 +33,20 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.gson.JsonObject;
 import com.squareup.picasso.Picasso;
 import com.yuyakaido.android.cardstackview.CardStackLayoutManager;
 import com.yuyakaido.android.cardstackview.CardStackListener;
 import com.yuyakaido.android.cardstackview.CardStackView;
 import com.yuyakaido.android.cardstackview.Direction;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -38,6 +54,7 @@ public class HomeActivity extends AppCompatActivity {
     static String username;
     RequestQueue cue;
 
+    SharedPreferences sp;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     CollectionReference posts = db.collection("Posts/Each Post/Each Post");
 
@@ -46,7 +63,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        SharedPreferences sp = getSharedPreferences(
+        sp = getSharedPreferences(
                 AuthActivity.PREFERENCES,
                 Context.MODE_PRIVATE
         );
@@ -102,15 +119,86 @@ public class HomeActivity extends AppCompatActivity {
         getFeed();
     }
 
+    public void addToHistory(QueryDocumentSnapshot doc) {
+        try {
+            JSONArray history = new JSONArray(
+                    sp.getString(AuthActivity.historyKey, "[]").toString()
+            );
+
+            history.put(new JSONObject()
+                    .put("user", doc.get("author").toString())
+                    .put("desc", doc.get("description").toString())
+            );
+
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putString(AuthActivity.historyKey, history.toString());
+            editor.apply();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+    public void followUser(String user) {
+        user = "adubatta";
+        //RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "https://api.github.com/user/following/" + user;
+
+        // Change this to a GET to my server that does the work (provide token, user)
+        StringRequest req = new StringRequest(Request.Method.PUT, url,
+                new Response.Listener<String>()
+                {
+                    @Override
+                    public void onResponse(String response) {
+                        // response
+                        Log.e("Response", response);
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO Auto-generated method stub
+                        Log.e("ERROR","error => "+error.toString());
+                    }
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String>  params = new HashMap<String, String>();
+
+                params.put("Accept", "application/vnd.github.v3+json");
+                params.put("Authorization", "token" + HomeActivity.token);
+
+                return params;
+            }
+        };
+        this.cue.add(req);
+    }
+
     public void getFeed() {
         CardStackView postsView = findViewById(R.id.postsView);
         CardStackListener listener = new CardStackListener() {
             public void onCardSwiped(Direction direction) {
                 if (direction == Direction.Right) {
-                    Log.w("CHIT", "Right SWIPE!"); // FIXME Github api star...
+                    CardStackLayoutManager lm = (CardStackLayoutManager) postsView.getLayoutManager();
+                    PostsAdapter rva = (PostsAdapter) postsView.getAdapter();
+
+                    int pos = lm.getTopPosition() - 1;
+                    QueryDocumentSnapshot doc = rva.getPost(pos);
+
+                    // Handle following user
+                    followUser(
+                            doc.get("author").toString()
+                    );
+
+                    // Handle history
+                    addToHistory(doc);
                 }
             }
 
+            // FIXME I think the author of this library didn't know how to make
+            // the interface methods optional. . . not much we can do besides have these empty defs
             public void onCardRewound() {}
             public void onCardCanceled() {}
             public void onCardAppeared(View view, int position) {}
@@ -141,6 +229,7 @@ public class HomeActivity extends AppCompatActivity {
                     }
                 });
     }
+
     public void addUserInfo() {
         ImageView pfpIV = findViewById(R.id.pfpView);
         String avatarPngUrl = String.format("https://avatars.githubusercontent.com/%s?size=80", this.username);
