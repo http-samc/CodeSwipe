@@ -66,7 +66,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="15dp"
-        android:text="Sign up or log in to continue."
+        android:text="sign up or log in to continue"
         android:textColor="@color/regularText"
         app:layout_constraintBottom_toTopOf="@+id/authBtn"
         app:layout_constraintEnd_toEndOf="parent"
