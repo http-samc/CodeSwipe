@@ -210,7 +210,8 @@ public class HomeActivity extends AppCompatActivity {
             );
 
             history.put(new JSONObject()
-                    .put("user", doc.get("author").toString())
+                    .put("author", doc.get("author").toString())
+                    .put("repoName", doc.get("repoName").toString())
                     .put("desc", doc.get("description").toString())
             );
 
