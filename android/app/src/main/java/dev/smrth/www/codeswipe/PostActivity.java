@@ -48,6 +48,37 @@ public class PostActivity extends AppCompatActivity {
     EditText mSnip, mDesc, mRepo;
     RequestQueue cue;
 
+    public static final String[] toFileExt = {
+            "Java",
+            "java",
+            "Kotlin",
+            "kt",
+            "C",
+            "c",
+            "C#",
+            "cs",
+            "C++",
+            "cpp",
+            "Python",
+            "py",
+            "Ruby",
+            "rb",
+            "JavaScript",
+            "js",
+            "Go",
+            "go",
+            "R",
+            "r",
+            "LaTex",
+            "tex",
+            "MatLab",
+            "m",
+            "Bash",
+            "sh",
+            "YAML",
+            "yaml"
+    };
+
     private static final String TAG = "PostActivity";
     private static final String KEY_LANGUAGE = "language";
     private static final String KEY_DESCRIPTION = "description";
@@ -61,7 +92,6 @@ public class PostActivity extends AppCompatActivity {
     DocumentReference postRef = db.document("Posts/Each Post");
 
     static DocumentReference mostRecentPost;
-    //static String mostRecentPostGist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -205,8 +235,18 @@ public class PostActivity extends AppCompatActivity {
         );
 
         JSONObject files = new JSONObject();
+
+        int idx = 0; // Make it so idx + 1 is our file extension
+        String language = doc.get("language").toString();
+        for (int i = 0; i < PostActivity.toFileExt.length; i++) {
+            if (PostActivity.toFileExt[i].equals(language)) {
+                idx = i;
+                break;
+            }
+        }
+
         files.put(
-                "CodeSwipeSnippet." + doc.get("language"),
+                "CodeSwipeSnippet." + PostActivity.toFileExt[idx+1],
                 fileDesc
         );
         JSONObject body = new JSONObject();
