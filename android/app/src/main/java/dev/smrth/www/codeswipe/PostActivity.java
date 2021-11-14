@@ -91,11 +91,28 @@ public class PostActivity extends AppCompatActivity {
         }
 
         // Check for excessive description
-        if (description.length() >= 120) {
+        if (description.length() > 120) {
             Toast.makeText(
-                    this, "Your description must be under 120 characters (current: " + description.length() + ")",
+                    this, "Your description can't be longer than 120 characters (current: " + description.length() + ")",
                     Toast.LENGTH_LONG
             ).show();
+        }
+
+        // Check # of lines
+        char newLine = '\n';
+        int c = 0;
+
+        for (int i = 0; i < snippet.length(); i++) {
+            if (snippet.charAt(i) == newLine)
+                c++;
+        }
+
+        if (c > 150) {
+            Toast.makeText(
+                    this, "Your snippet can't be longer than 150 lines (current: " + snippet.length() + ")",
+                    Toast.LENGTH_LONG
+            ).show();
+            return;
         }
 
         // Getting username to add to author attr

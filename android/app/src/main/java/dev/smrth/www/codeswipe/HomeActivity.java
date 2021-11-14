@@ -144,8 +144,10 @@ public class HomeActivity extends AppCompatActivity {
         int pos;
         try {
             pos = lm.getTopPosition();
+            if (pos < 0)
+                throw new Exception();
         }
-        catch (NullPointerException e) {
+        catch (Exception e) {
             Toast.makeText(this, "There's no post to share!", Toast.LENGTH_LONG).show();
             return;
         }

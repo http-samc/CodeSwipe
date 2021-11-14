@@ -2,24 +2,22 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="300dp"
-    android:layout_height="450dp"
+    android:layout_width="380dp"
+    android:layout_height="530dp"
     android:background="@drawable/rounded_borders">
 
     <com.pddstudio.highlightjs.HighlightJsView
         android:id="@+id/postSnippet"
-        android:layout_width="300dp"
-        android:layout_height="275dp"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/rounded_borders"
-        android:padding="10dp"
+        android:layout_width="365dp"
+        android:layout_height="375dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/postDesc"
-        android:layout_width="300dp"
+        android:layout_width="380dp"
         android:layout_height="115dp"
         android:layout_marginStart="5dp"
         android:layout_marginTop="10dp"
