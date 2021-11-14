@@ -213,6 +213,7 @@ public class HomeActivity extends AppCompatActivity {
                     .put("author", doc.get("author").toString())
                     .put("repoName", doc.get("repoName").toString())
                     .put("desc", doc.get("description").toString())
+                    .put("gist", doc.get("gist").toString())
             );
 
             SharedPreferences.Editor editor = sp.edit();

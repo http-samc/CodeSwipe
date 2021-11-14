@@ -59,10 +59,16 @@ public class HistoryActivity extends AppCompatActivity {
                 // Getting post
                 JSONObject post = (JSONObject) posts.get(i);
 
+                // Getting author
+                String author = post.getString("author");
+                String repo = post.getString("repoName");
+                if (!repo.equals(""))
+                    author += "/" + repo;
+
                 // Creating TV and formatting
                 TextView container = new TextView(this);
                 container.setTextAppearance(this, R.style.regTxt);
-                String html = "<b>" + post.getString("author") + "</b><p>" + post.getString("desc") + "</p>";
+                String html = "<b>" + author + "</b><p>" + post.getString("desc") + "</p>";
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     container.setText(Html.fromHtml(html, Html.FROM_HTML_MODE_COMPACT));
                 } else {
@@ -98,7 +104,7 @@ public class HistoryActivity extends AppCompatActivity {
             if (!repoName.equals("")) // add in repo if given
                 author += "/" + post.getString("repoName");
 
-            String url = "https://github.com/" + author;
+            String url = post.getString("gist");
 
             Log.w("CHIT", url);
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));

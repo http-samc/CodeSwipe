@@ -55,6 +55,7 @@ public class PostActivity extends AppCompatActivity {
     private static final String KEY_REPO = "repoName";
     private static final String KEY_AUTHOR = "author";
     private static final String KEY_VIEWED_BY = "viewedBy";
+    private static final String KEY_GIST = "gist";
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     DocumentReference postRef = db.document("Posts/Each Post");
@@ -156,6 +157,7 @@ public class PostActivity extends AppCompatActivity {
         post.put(KEY_REPO, repoName);
         post.put(KEY_AUTHOR, username);
         post.put(KEY_VIEWED_BY, viewedBy);
+        post.put(KEY_GIST, "https://www.smrth.dev/codeswipe");
 
         // Create Gist
         try {
