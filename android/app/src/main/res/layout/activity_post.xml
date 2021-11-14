@@ -4,66 +4,103 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     tools:context=".PostActivity">
 
-    <EditText
-        android:id="@+id/edit_language"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="15dp"
-        android:layout_marginTop="45dp"
-        android:ems="10"
-        android:hint="Enter Language"
-        android:inputType="textPersonName"
-        android:padding="10dp"
+    <LinearLayout
+        android:layout_width="409dp"
+        android:layout_height="657dp"
+        android:background="@color/background"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <EditText
-        android:id="@+id/edit_snip"
-        android:layout_width="0dp"
-        android:layout_height="280dp"
-        android:layout_marginHorizontal="15dp"
-        android:layout_marginTop="45dp"
-        android:ems="10"
-        android:gravity="start"
-        android:hint="Paste the Code Snippet"
-        android:inputType="textMultiLine"
-        android:padding="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_language" />
+        <TextView
+            android:id="@+id/createPostTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat"
+            android:text="CodeSwipe"
+            android:textAlignment="center"
+            android:textColor="@color/title"
+            android:textSize="35sp" />
 
-    <EditText
-        android:id="@+id/edit_desc"
-        android:layout_width="0dp"
-        android:layout_height="150dp"
-        android:layout_marginHorizontal="15dp"
-        android:layout_marginTop="45dp"
-        android:ems="10"
-        android:hint="Enter Description"
-        android:inputType="textMultiLine"
-        android:padding="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_snip" />
+        <Spinner
+            android:id="@+id/language"
+            android:layout_width="300dp"
+            android:layout_height="50sp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:prompt="@string/lang_hint"
+            android:spinnerMode="dialog" />
 
-    <Button
-        android:id="@+id/post_btn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="15dp"
-        android:layout_marginTop="5dp"
-        android:hint="POST"
-        android:onClick="savePost"
-        android:padding="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_desc" />
+        <EditText
+            android:id="@+id/snippet"
+            android:layout_width="300dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/edit_text"
+            android:ems="10"
+            android:fontFamily="monospace"
+            android:gravity="start"
+            android:hint="Paste your snippet"
+            android:inputType="textMultiLine"
+            android:padding="10dp"
+            android:textColor="@color/regularText"
+            android:textColorHint="@color/regularText"
+            android:textSize="10sp" />
 
+        <EditText
+            android:id="@+id/description"
+            android:layout_width="300dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/edit_text"
+            android:ems="10"
+            android:fontFamily="@font/montserrat"
+            android:gravity="start"
+            android:hint="Post description (optional)"
+            android:inputType="textMultiLine"
+            android:padding="10dp"
+            android:textColor="@color/regularText"
+            android:textColorHint="@color/regularText" />
+
+        <EditText
+            android:id="@+id/repoName"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/edit_text"
+            android:ems="10"
+            android:fontFamily="@font/montserrat"
+            android:gravity="start"
+            android:hint="GitHub Repo Name (optional)"
+            android:padding="10dp"
+            android:textColor="@color/regularText"
+            android:textColorHint="@color/regularText" />
+
+        <Button
+            android:id="@+id/postBtn"
+            style="@style/Widget.MaterialComponents.Button.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="15dp"
+            android:width="300dp"
+            android:height="50dp"
+            android:backgroundTint="@color/onBackground"
+            android:onClick="submitPost"
+            android:text="submit post"
+            android:textAllCaps="false"
+            android:textColor="@color/regularText" />
+
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CodeSwipe</string>
+    <string name="lang_hint">Select Language</string>
 </resources>

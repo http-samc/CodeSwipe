@@ -3,10 +3,15 @@ package dev.smrth.www.codeswipe;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -24,28 +29,31 @@ import java.util.Map;
 
 public class PostActivity extends AppCompatActivity {
 
+    Spinner mLang;
+    EditText mSnip, mDesc, mRepo;
 
-    EditText mLang, mSnip, mDesc;
     private static final String TAG = "PostActivity";
     private static final String KEY_LANGUAGE = "language";
     private static final String KEY_DESCRIPTION = "description";
     private static final String KEY_SNIPPET = "snippet";
+    private static final String KEY_REPO = "repoName";
+    private static final String KEY_AUTHOR = "author";
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     DocumentReference postRef = db.document("Posts/Each Post");
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
 
-        mLang = findViewById(R.id.edit_language);
-        mSnip = findViewById(R.id.edit_snip);
-        mDesc = findViewById(R.id.edit_desc);
+        mLang = findViewById(R.id.language);
+        mSnip = findViewById(R.id.snippet);
+        mDesc = findViewById(R.id.description);
+        mRepo = findViewById(R.id.repoName);
 
+        addLangs();
     }
-
 
     @Override
     protected void onStart() {
@@ -62,27 +70,60 @@ public class PostActivity extends AppCompatActivity {
         });
     }
 
-    public void savePost(View v) {
-        String language = mLang.getText().toString();
+    public void addLangs() {
+        Spinner langs = (Spinner) findViewById(R.id.language);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.languages, android.R.layout.simple_spinner_item);  // FIXME AND MAKE THE COLOR NOT BLACK
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        langs.setAdapter(adapter);
+    }
+
+    public void submitPost(View v) {
+        String language = mLang.getSelectedItem().toString();
         String snippet = mSnip.getText().toString();
         String description = mDesc.getText().toString();
+        String repoName = mRepo.getText().toString();
+
+        if (snippet.equals("")) {
+            Toast.makeText(this, "Please enter a snippet.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // Getting username to add to author attr
+        SharedPreferences sp = getSharedPreferences(
+                AuthActivity.PREFERENCES,
+                Context.MODE_PRIVATE
+        );
+        String username = sp.getString(AuthActivity.usernameKey, "");
+
+        // Filling in post object with input
         Map<String, Object> post = new HashMap<>();
         post.put("timestamp", FieldValue.serverTimestamp());
         post.put(KEY_LANGUAGE, language);
         post.put(KEY_SNIPPET, snippet);
         post.put(KEY_DESCRIPTION, description);
+        post.put(KEY_REPO, repoName);
+        post.put(KEY_AUTHOR, username);
+
+        // Send to database w/ callbacks
         postRef.collection("Each Post")
                 .add(post)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                        Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
+                        Toast.makeText(PostActivity.this, "Submitted Post Successfully!", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(PostActivity.this, HomeActivity.class);
+                        startActivity(intent);
+                        finish();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error adding post", e);
+                        Toast.makeText(PostActivity.this, "Error adding post! Please try again later.", Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(PostActivity.this, HomeActivity.class);
+                        startActivity(intent);
+                        finish();
                     }
                 });
     }

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/postSnippet"
+        android:layout_width="275dp"
+        android:layout_height="272dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/onBackground"
+        android:inputType="textMultiLine"
+        android:text="TextView"
+        android:textColor="@color/regularText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/postDesc"
+        android:layout_width="275dp"
+        android:layout_height="75dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/onBackground"
+        android:inputType="textMultiLine"
+        android:text="TextView"
+        android:textColor="@color/regularText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/postAuthor" />
+
+    <TextView
+        android:id="@+id/postAuthor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="68dp"
+        android:layout_marginTop="5dp"
+        android:width="75dp"
+        android:background="@color/onBackground"
+        android:text="TextView"
+        android:textColor="@color/subtitle"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/postSnippet" />
+
+    <TextView
+        android:id="@+id/postDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:background="@color/onBackground"
+        android:text="TextView"
+        android:textColor="@color/regularText"
+        app:layout_constraintStart_toEndOf="@+id/postAuthor"
+        app:layout_constraintTop_toBottomOf="@+id/postSnippet" />
+
+    <TextView
+        android:id="@+id/postLang"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:background="@color/onBackground"
+        android:text="TextView"
+        android:textColor="@color/regularText"
+        app:layout_constraintStart_toEndOf="@+id/postDate"
+        app:layout_constraintTop_toBottomOf="@+id/postSnippet" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

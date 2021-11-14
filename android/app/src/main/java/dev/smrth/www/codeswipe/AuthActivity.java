@@ -3,20 +3,23 @@ package dev.smrth.www.codeswipe;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AdditionalUserInfo;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.OAuthCredential;
 import com.google.firebase.auth.OAuthProvider;
 
 import java.util.ArrayList;
@@ -28,12 +31,20 @@ public class AuthActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     FirebaseUser fUser;
 
+    static String token;
+    static String username;
+
+    static final String tokenKey = "GITHUB_OAUTH_TOKEN";
+    static final String usernameKey = "GITHUB_USERNAME";
+
+    static final String PREFERENCES = "CodeSwipePreferences";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_auth);
 
-        btnLogin = findViewById(R.id.signInButton);
+        btnLogin = findViewById(R.id.authBtn);
         mAuth = FirebaseAuth.getInstance();
         fUser = mAuth.getCurrentUser();
 
@@ -59,11 +70,11 @@ public class AuthActivity extends AppCompatActivity {
                                     new OnSuccessListener<AuthResult>() {
                                         @Override
                                         public void onSuccess(AuthResult authResult) {
-                                            // User is signed in.
-                                            // IdP data available in
-                                            // authResult.getAdditionalUserInfo().getProfile().
-                                            // The OAuth access token can also be retrieved:
-                                            // authResult.getCredential().getAccessToken().
+                                            OAuthCredential cred = (OAuthCredential) authResult.getCredential();
+                                            AuthActivity.token = cred.getAccessToken();
+
+                                            AdditionalUserInfo info = authResult.getAdditionalUserInfo();
+                                            AuthActivity.username = info.getUsername();
                                         }
                                     })
                             .addOnFailureListener(
@@ -80,6 +91,12 @@ public class AuthActivity extends AppCompatActivity {
                                     new OnSuccessListener<AuthResult>() {
                                         @Override
                                         public void onSuccess(AuthResult authResult) {
+                                            OAuthCredential cred = (OAuthCredential) authResult.getCredential();
+                                            AuthActivity.token = cred.getAccessToken();
+
+                                            AdditionalUserInfo info = authResult.getAdditionalUserInfo();
+                                            AuthActivity.username = info.getUsername();
+
                                             openNextActivity();
                                         }
                                     })
@@ -98,9 +115,21 @@ public class AuthActivity extends AppCompatActivity {
 
     }
 
+    // After we get Auth, write username and token to SharedPrefs and open home activity
     private void openNextActivity() {
         Intent intent = new Intent(AuthActivity.this,HomeActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        SharedPreferences sp = getSharedPreferences(
+                AuthActivity.PREFERENCES,
+                Context.MODE_PRIVATE
+        );
+
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString(this.tokenKey, this.token);
+        editor.putString(this.usernameKey, this.username);
+        editor.apply();
+
         startActivity(intent);
         finish();
     }
