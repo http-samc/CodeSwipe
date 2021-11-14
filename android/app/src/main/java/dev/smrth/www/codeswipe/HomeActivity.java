@@ -25,7 +25,10 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
+import com.yuyakaido.android.cardstackview.CardStackLayoutManager;
+import com.yuyakaido.android.cardstackview.CardStackListener;
 import com.yuyakaido.android.cardstackview.CardStackView;
+import com.yuyakaido.android.cardstackview.Direction;
 
 import org.w3c.dom.Text;
 
@@ -101,7 +104,22 @@ public class HomeActivity extends AppCompatActivity {
 
     public void getFeed() {
         CardStackView postsView = findViewById(R.id.postsView);
-        //PostsAdapter postsAdapter = new PostsAdapter(getApplicationContext(), 0);
+        CardStackListener listener = new CardStackListener() {
+            public void onCardSwiped(Direction direction) {
+                if (direction == Direction.Right) {
+                    Log.w("CHIT", "Right SWIPE!"); // FIXME Github api star...
+                }
+            }
+
+            public void onCardRewound() {}
+            public void onCardCanceled() {}
+            public void onCardAppeared(View view, int position) {}
+            public void onCardDisappeared(View view, int position) {}
+            public void onCardDragging(Direction direction, float ratio) {}
+
+        };
+        CardStackLayoutManager layoutManager = new CardStackLayoutManager(getApplicationContext(), listener);
+        postsView.setLayoutManager(layoutManager);
 
         posts.whereEqualTo("author", this.username) // FIXME change to "whereNotEqualTo" in production to get OTHER ppls posts
                 .get()

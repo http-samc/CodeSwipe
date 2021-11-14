@@ -18,14 +18,13 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView snippet, desc, lang, date, author;
+        TextView snippet, desc, lang, author;
 
         public ViewHolder(View view) {
             super(view);
 
             snippet = view.findViewById(R.id.postSnippet);
             desc = view.findViewById(R.id.postDesc);
-            date = view.findViewById(R.id.postDate);
             lang = view.findViewById(R.id.postLang);
             author = view.findViewById(R.id.postAuthor);
 
@@ -53,7 +52,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         v.author.setText(doc.get("author").toString());
         v.snippet.setText(doc.get("snippet").toString());
         v.desc.setText(doc.get("description").toString());
-        v.date.setText(doc.get("timestamp").toString());
         v.lang.setText(doc.get("language").toString());
 
     }

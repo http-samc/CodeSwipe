@@ -44,8 +44,8 @@
     <com.yuyakaido.android.cardstackview.CardStackView
         android:id="@+id/postsView"
         android:layout_width="300dp"
-        android:layout_height="400dp"
-        android:background="@color/onBackground"
+        android:layout_height="450dp"
+        android:background="@drawable/rounded_borders"
         app:layout_constraintBottom_toTopOf="@+id/actionBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
