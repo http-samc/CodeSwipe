@@ -221,6 +221,10 @@ public class HomeActivity extends AppCompatActivity {
         this.cue.add(req);
     }
 
+    /*
+    TODO have each user get their own "feed" collection that pulls from master
+    then query that
+     */
     public void getFeed() {
         CardStackView postsView = findViewById(R.id.postsView);
         CardStackListener listener = new CardStackListener() {
