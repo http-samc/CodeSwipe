@@ -84,6 +84,23 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        Button historyBtn = findViewById(R.id.historyBtn);
+        historyBtn.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+                Intent intent = new Intent(HomeActivity.this, HistoryActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        Button shareBtn = findViewById(R.id.shareBtn);
+        shareBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                share();
+            }
+        });
+
         ImageView pfpIV = findViewById(R.id.pfpView);
         pfpIV.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -119,6 +136,32 @@ public class HomeActivity extends AppCompatActivity {
         getFeed();
     }
 
+    public void share() {
+        CardStackView postsView = findViewById(R.id.postsView);
+        CardStackLayoutManager lm = (CardStackLayoutManager) postsView.getLayoutManager();
+        PostsAdapter rva = (PostsAdapter) postsView.getAdapter();
+
+        int pos;
+        try {
+            pos = lm.getTopPosition();
+        }
+        catch (NullPointerException e) {
+            Toast.makeText(this, "There's no post to share!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        QueryDocumentSnapshot doc = rva.getPost(pos);
+        String msg = "Check out this awesome " + doc.get("language") + " snippet by "
+                + doc.get("author") + " on CodeSwipe:\n\n" + doc.get("snippet");
+
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, msg);
+        sendIntent.setType("text/plain");
+
+        Intent shareIntent = Intent.createChooser(sendIntent, null);
+        startActivity(shareIntent);
+    }
     public void addToHistory(QueryDocumentSnapshot doc) {
         try {
             JSONArray history = new JSONArray(
@@ -139,6 +182,7 @@ public class HomeActivity extends AppCompatActivity {
         }
 
     }
+
     public void followUser(String user) {
         user = "adubatta";
         //RequestQueue queue = Volley.newRequestQueue(this);

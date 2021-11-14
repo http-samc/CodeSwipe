@@ -20,12 +20,14 @@
             android:id="@+id/historyParent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/historyTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="-10dp"
                 android:fontFamily="@font/montserrat"
                 android:text="CodeSwipe"
                 android:textAlignment="center"

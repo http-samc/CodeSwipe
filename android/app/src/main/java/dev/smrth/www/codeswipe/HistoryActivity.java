@@ -7,6 +7,9 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
+import android.view.ContextThemeWrapper;
+import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -34,6 +37,14 @@ public class HistoryActivity extends AppCompatActivity {
     }
 
     public void renderHistory() {
+        // Clear our history (except for title)
+        /*
+        for (int i = 1; i < ll.getChildCount(); i++) {
+            ll.removeViewAt(i);
+            i--;
+        }
+         */
+
         // A string of our history
         String historyStr = sp.getString(AuthActivity.historyKey, "[]");
         try {
@@ -57,6 +68,22 @@ public class HistoryActivity extends AppCompatActivity {
                 // Adding to layout
                 this.ll.addView(container);
             }
+            // Add clear history btn
+            /*
+            Button clear = new Button(this);
+            clear.setText("clear");
+            clear.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    SharedPreferences.Editor editor = sp.edit();
+                    editor.putString(AuthActivity.historyKey, "[]");
+                    editor.apply();
+                    renderHistory();
+                }
+            });
+            this.ll.addView(clear);
+
+             */
         } catch (JSONException e) {
             e.printStackTrace();
         }
