@@ -17,6 +17,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.google.gson.JsonObject;
 import com.google.rpc.context.AttributeContext;
 
@@ -34,8 +36,8 @@ public class HistoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
-        sp = getSharedPreferences(AuthActivity.PREFERENCES, Context.MODE_PRIVATE);
-        ll = findViewById(R.id.historyParent);
+        this.sp = getSharedPreferences(AuthActivity.PREFERENCES, Context.MODE_PRIVATE);
+        this.ll = findViewById(R.id.historyParent);
 
         Toast.makeText(this,
                 "Here's everything you've liked! Click on a post to open it in the browser!",

@@ -14,6 +14,14 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
@@ -22,7 +30,11 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,6 +46,7 @@ public class PostActivity extends AppCompatActivity {
 
     Spinner mLang;
     EditText mSnip, mDesc, mRepo;
+    RequestQueue cue;
 
     private static final String TAG = "PostActivity";
     private static final String KEY_LANGUAGE = "language";
@@ -46,6 +59,9 @@ public class PostActivity extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     DocumentReference postRef = db.document("Posts/Each Post");
 
+    static DocumentReference mostRecentPost;
+    //static String mostRecentPostGist;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +71,8 @@ public class PostActivity extends AppCompatActivity {
         mSnip = findViewById(R.id.snippet);
         mDesc = findViewById(R.id.description);
         mRepo = findViewById(R.id.repoName);
+
+        this.cue = Volley.newRequestQueue(this);
 
         addLangs();
     }
@@ -139,12 +157,21 @@ public class PostActivity extends AppCompatActivity {
         post.put(KEY_AUTHOR, username);
         post.put(KEY_VIEWED_BY, viewedBy);
 
+        // Create Gist
+        try {
+            createGist(post);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         // Send to database w/ callbacks
         postRef.collection("Each Post")
                 .add(post)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
+                        PostActivity.mostRecentPost = documentReference;
+
                         Toast.makeText(PostActivity.this, "Submitted Post Successfully!", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(PostActivity.this, HomeActivity.class);
                         startActivity(intent);
@@ -154,6 +181,8 @@ public class PostActivity extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
+                        PostActivity.mostRecentPost = null;
+
                         Toast.makeText(PostActivity.this, "Error adding post! Please try again later.", Toast.LENGTH_LONG).show();
                         Intent intent = new Intent(PostActivity.this, HomeActivity.class);
                         startActivity(intent);
@@ -162,25 +191,55 @@ public class PostActivity extends AppCompatActivity {
                 });
     }
 
-    /*
-    public void updateDescription(View v) {
-        String description = mDesc.getText().toString();
-        //Map<String, Object> note = new HashMap<>();
-        //note.put(KEY_DESCRIPTION, description);
-        //noteRef.set(note, SetOptions.merge());
-        postRef.update(KEY_DESCRIPTION, description);
-    }
-    public void deleteDescription(View v) {
-        //Map<String, Object> note = new HashMap<>();
-        //note.put(KEY_DESCRIPTION, FieldValue.delete());
-        //noteRef.update(note);
-        postRef.update(KEY_DESCRIPTION, FieldValue.delete());
-    }
-    public void deletePost(View v) {
-        postRef.delete();
-    }
+    // Create a gist for the snippet
+    public void createGist(Map<String, Object> doc) throws JSONException {
+        String url = "https://api.github.com/gists";
 
-    //maybe need transactions or batched writes later? idk will need it for profile activity or smth
-     */
+        // Create request payload
+        JSONObject fileDesc = new JSONObject();
+        fileDesc.put(
+                "content",
+                doc.get("snippet")
+        );
 
+        JSONObject files = new JSONObject();
+        files.put(
+                "CodeSwipeSnippet." + doc.get("language"),
+                fileDesc
+        );
+        JSONObject body = new JSONObject();
+        body.put("files", files);
+        body.put("public", true);
+        body.put("description", doc.get("description"));
+
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, url, body, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    String gistUrl = response.getString("html_url");
+                    while (PostActivity.mostRecentPost == null) // wait for document creation
+                        assert true;
+                    PostActivity.mostRecentPost.update("gist", gistUrl);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String>  params = new HashMap<String, String>();
+
+                params.put("Accept", "application/vnd.github.v3+json");
+                params.put("Authorization", "token " + HomeActivity.token);
+
+                return params;
+            }
+        };
+        this.cue.add(req);
+    }
 }

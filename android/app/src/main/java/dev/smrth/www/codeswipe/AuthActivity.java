@@ -58,6 +58,7 @@ public class AuthActivity extends AppCompatActivity {
                         new ArrayList<String>() {
                             {
                                 add("user");
+                                add("gist");
                             }
                         };
                 provider.setScopes(scopes);
