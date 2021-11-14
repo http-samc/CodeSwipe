@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:maxHeight="500dp"
     android:background="#222"
     tools:context=".HomeActivity">
 
@@ -43,8 +44,11 @@
 
     <com.yuyakaido.android.cardstackview.CardStackView
         android:id="@+id/postsView"
-        android:layout_width="380dp"
-        android:layout_height="550dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:maxWidth="380dp"
+        android:maxHeight="530dp"
+        android:layout_margin="10dp"
         android:background="@drawable/rounded_borders_light"
         app:layout_constraintBottom_toTopOf="@+id/actionBar"
         app:layout_constraintEnd_toEndOf="parent"
