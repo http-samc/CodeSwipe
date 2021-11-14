@@ -116,26 +116,61 @@ public class HomeActivity extends AppCompatActivity {
                 DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        SharedPreferences.Editor editor = sp.edit();
+
                         switch (i) {
-                            case DialogInterface.BUTTON_POSITIVE:
+                            case DialogInterface.BUTTON_NEUTRAL:
+
+                                // Remove token and username from data
+                                editor.putString(AuthActivity.tokenKey, "");
+                                editor.putString(AuthActivity.usernameKey, "");
+                                editor.apply();
+
+                                // Notify user
+                                Toast.makeText(getApplicationContext(), "Bye " + HomeActivity.username + "!", Toast.LENGTH_SHORT).show();
+
+                                // Clear from instance vars
+                                HomeActivity.token = "";
+                                HomeActivity.username = "";
+
+                                // Send back to auth screen
                                 Intent intent = new Intent(HomeActivity.this, AuthActivity.class);
                                 startActivity(intent);
                                 finish();
+
                                 break;
+
                             case DialogInterface.BUTTON_NEGATIVE:
-                                // No (ignore)
+                                // Clear history data
+                                editor.putString(AuthActivity.historyKey, "[]");
+                                editor.apply();
+
+                                // Notify User
+                                Toast.makeText(getApplicationContext(), "Cleared History!", Toast.LENGTH_SHORT).show();
+
+                                break;
+
+                            case DialogInterface.BUTTON_POSITIVE:
+                                // Delete posts
+                                deleteAllPosts();
+
+                                // Notify User
+                                Toast.makeText(getApplicationContext(), "Deleted all Posts!", Toast.LENGTH_SHORT).show();
+
                                 break;
                         }
                     }
                 };
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
-                builder.setMessage("Do you want to log out from '" + HomeActivity.username + "'?").setPositiveButton(
+                builder.setMessage("Welcome, " + HomeActivity.username + ". What do you want to do?"
+                ).setNeutralButton(
                         "Log Out", dialogClickListener
                 ).setNegativeButton(
-                        "Cancel", dialogClickListener
+                        "Clear History", dialogClickListener
+                ).setPositiveButton(
+                        "Delete All Posts", dialogClickListener
                 ).show();
-
             }
         });
 
@@ -267,7 +302,7 @@ public class HomeActivity extends AppCompatActivity {
         postsView.setLayoutManager(layoutManager);
 
         // Start off by getting all the posts we didn't make
-        posts.whereEqualTo("author", this.username)
+        posts.whereEqualTo("author", HomeActivity.username) // FIXME production
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -278,7 +313,7 @@ public class HomeActivity extends AppCompatActivity {
                             ArrayList<QueryDocumentSnapshot> posts = new ArrayList<>();
                             for (QueryDocumentSnapshot doc : task.getResult()) {
                                 List<String> viewedBy = (List<String>) doc.get("viewedBy");
-                                if (viewedBy.contains(HomeActivity.username))
+                                if (viewedBy.contains(HomeActivity.username)) // FIXME production
                                     posts.add(doc);
                             }
 
@@ -300,6 +335,21 @@ public class HomeActivity extends AppCompatActivity {
         ImageView pfpIV = findViewById(R.id.pfpView);
         String avatarPngUrl = String.format("https://avatars.githubusercontent.com/%s?size=80", this.username);
         Picasso.get().load(avatarPngUrl).transform(new CircleTransform()).into(pfpIV);
+    }
+
+    // Delete all of the user's posts from Firestore
+    public void deleteAllPosts() {
+        posts.whereEqualTo("author", HomeActivity.username)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (!task.isSuccessful())
+                            return;
+                        for (QueryDocumentSnapshot doc : task.getResult())
+                            doc.getReference().delete();
+                    }
+                });
     }
 
     // Tell Firestore that the user has seen the most recently swiped post
