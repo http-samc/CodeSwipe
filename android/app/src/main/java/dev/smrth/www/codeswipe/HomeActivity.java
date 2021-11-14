@@ -46,6 +46,7 @@ import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
@@ -121,7 +122,7 @@ public class HomeActivity extends AppCompatActivity {
                 };
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
-                builder.setMessage("Do you want to log out of '" + HomeActivity.username + "'?").setPositiveButton(
+                builder.setMessage("Do you want to log out from '" + HomeActivity.username + "'?").setPositiveButton(
                         "Log Out", dialogClickListener
                 ).setNegativeButton(
                         "Cancel", dialogClickListener
@@ -221,10 +222,6 @@ public class HomeActivity extends AppCompatActivity {
         this.cue.add(req);
     }
 
-    /*
-    TODO have each user get their own "feed" collection that pulls from master
-    then query that
-     */
     public void getFeed() {
         CardStackView postsView = findViewById(R.id.postsView);
         CardStackListener listener = new CardStackListener() {
@@ -243,6 +240,9 @@ public class HomeActivity extends AppCompatActivity {
 
                     // Handle history
                     addToHistory(doc);
+
+                    // Mark as read
+                    markPostAsRead(doc);
                 }
             }
 
@@ -289,5 +289,20 @@ public class HomeActivity extends AppCompatActivity {
         ImageView pfpIV = findViewById(R.id.pfpView);
         String avatarPngUrl = String.format("https://avatars.githubusercontent.com/%s?size=80", this.username);
         Picasso.get().load(avatarPngUrl).transform(new CircleTransform()).into(pfpIV);
+    }
+
+    public void markPostAsRead(QueryDocumentSnapshot doc) {
+
+        // Getting viewedBy list and adding current user to it
+        List<String> viewedBy = (List<String>) doc.get("viewedBy");
+        //viewedBy.add(HomeActivity.username);
+        viewedBy.add(HomeActivity.username);
+
+        // Posting to collection (we don't need a callback since its a background task)
+        db.document("Posts/Each Post")
+                .collection("Each Post")
+                .document(doc.getId())
+                .update("viewedBy", viewedBy);
+
     }
 }

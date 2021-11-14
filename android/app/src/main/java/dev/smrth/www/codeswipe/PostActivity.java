@@ -23,7 +23,10 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.SetOptions;
+
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -38,6 +41,7 @@ public class PostActivity extends AppCompatActivity {
     private static final String KEY_SNIPPET = "snippet";
     private static final String KEY_REPO = "repoName";
     private static final String KEY_AUTHOR = "author";
+    private static final String KEY_VIEWED_BY = "viewedBy";
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     DocumentReference postRef = db.document("Posts/Each Post");
@@ -122,6 +126,9 @@ public class PostActivity extends AppCompatActivity {
         );
         String username = sp.getString(AuthActivity.usernameKey, "");
 
+        // Viewed By (only has current user to start)
+        List<String> viewedBy = Arrays.asList(HomeActivity.username);
+
         // Filling in post object with input
         Map<String, Object> post = new HashMap<>();
         post.put("timestamp", FieldValue.serverTimestamp());
@@ -130,6 +137,7 @@ public class PostActivity extends AppCompatActivity {
         post.put(KEY_DESCRIPTION, description);
         post.put(KEY_REPO, repoName);
         post.put(KEY_AUTHOR, username);
+        post.put(KEY_VIEWED_BY, viewedBy);
 
         // Send to database w/ callbacks
         postRef.collection("Each Post")
