@@ -190,10 +190,9 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     // Follow the author of the most recently swiped post
-    public void followUser(QueryDocumentSnapshot doc) {
+    public void followUser(String user) {
 
-        String url = "https://api.github.com/user/following/" +
-                doc.get("author").toString();
+        String url = "https://api.github.com/user/following/" + user;
 
         StringRequest req = new StringRequest(Request.Method.PUT, url,
                 new Response.Listener<String>()
@@ -230,24 +229,25 @@ public class HomeActivity extends AppCompatActivity {
     public void getFeed() {
         CardStackView postsView = findViewById(R.id.postsView);
         CardStackListener listener = new CardStackListener() {
-
-            // Only event listener we need to implement for our purposes
             public void onCardSwiped(Direction direction) {
-                // Find most recently swiped document
-                CardStackLayoutManager lm = (CardStackLayoutManager) postsView.getLayoutManager();
-                PostsAdapter rva = (PostsAdapter) postsView.getAdapter();
-
-                int pos = lm.getTopPosition() - 1;
-                QueryDocumentSnapshot doc = rva.getPost(pos);
-
-                // Handle liking action
                 if (direction == Direction.Right) {
-                    followUser(doc);
-                    addToHistory(doc);
-                }
+                    CardStackLayoutManager lm = (CardStackLayoutManager) postsView.getLayoutManager();
+                    PostsAdapter rva = (PostsAdapter) postsView.getAdapter();
 
-                // Mark post as read regardless of swipe direction
-                markPostAsRead(doc);
+                    int pos = lm.getTopPosition() - 1;
+                    QueryDocumentSnapshot doc = rva.getPost(pos);
+
+                    // Handle following user
+                    followUser(
+                            doc.get("author").toString()
+                    );
+
+                    // Handle history
+                    addToHistory(doc);
+
+                    // Mark as read
+                    markPostAsRead(doc);
+                }
             }
 
             public void onCardRewound() {}
@@ -266,8 +266,7 @@ public class HomeActivity extends AppCompatActivity {
 
         postsView.setLayoutManager(layoutManager);
 
-        // Start off by getting all the posts we didn't make
-        posts.whereEqualTo("author", this.username)
+        posts.whereNotEqualTo("author", this.username)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -278,7 +277,7 @@ public class HomeActivity extends AppCompatActivity {
                             ArrayList<QueryDocumentSnapshot> posts = new ArrayList<>();
                             for (QueryDocumentSnapshot doc : task.getResult()) {
                                 List<String> viewedBy = (List<String>) doc.get("viewedBy");
-                                if (viewedBy.contains(HomeActivity.username))
+                                if (!viewedBy.contains(HomeActivity.username))
                                     posts.add(doc);
                             }
 
