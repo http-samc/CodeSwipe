@@ -126,7 +126,7 @@ public class PostActivity extends AppCompatActivity {
     public void addLangs() {
         Spinner langs = (Spinner) findViewById(R.id.language);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.languages, android.R.layout.simple_spinner_item);
+                R.array.languages, R.layout.selected_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         langs.setAdapter(adapter);
     }

@@ -44,15 +44,15 @@
             android:layout_gravity="center"
             android:layout_marginHorizontal="15dp"
             android:layout_marginTop="20dp"
-            android:background="@drawable/rounded_light"
+            android:background="@drawable/rounded_corners_no_border"
             android:ems="10"
             android:fontFamily="monospace"
             android:gravity="start"
             android:hint="Paste your snippet"
             android:inputType="textMultiLine"
             android:padding="10dp"
-            android:textColor="@color/onBackground"
-            android:textColorHint="@color/onBackground"
+            android:textColor="@color/regularText"
+            android:textColorHint="@color/regularText"
             android:textSize="10sp" />
 
         <EditText
@@ -62,15 +62,15 @@
             android:layout_gravity="center"
             android:layout_marginHorizontal="15dp"
             android:layout_marginTop="20dp"
-            android:background="@drawable/rounded_light"
+            android:background="@drawable/rounded_corners_no_border"
             android:ems="10"
             android:fontFamily="@font/montserrat"
             android:gravity="start"
             android:hint="Post description (optional)"
             android:inputType="textMultiLine"
             android:padding="10dp"
-            android:textColor="@color/onBackground"
-            android:textColorHint="@color/onBackground" />
+            android:textColor="@color/regularText"
+            android:textColorHint="@color/regularText" />
 
         <EditText
             android:id="@+id/repoName"
@@ -79,14 +79,14 @@
             android:layout_gravity="center"
             android:layout_marginHorizontal="15dp"
             android:layout_marginTop="20dp"
-            android:background="@drawable/rounded_light"
+            android:background="@drawable/rounded_corners_no_border"
             android:ems="10"
             android:fontFamily="@font/montserrat"
             android:gravity="start"
             android:hint="GitHub Repo Name (optional)"
             android:padding="10dp"
-            android:textColor="@color/onBackground"
-            android:textColorHint="@color/onBackground" />
+            android:textColor="@color/regularText"
+            android:textColorHint="@color/regularText" />
 
         <Button
             android:id="@+id/postBtn"
