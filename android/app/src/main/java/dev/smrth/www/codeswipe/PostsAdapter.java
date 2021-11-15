@@ -53,7 +53,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             if (str.charAt(i) == '\n') {
                 c = -1;
             }
-            else if (c >= t) {
+            if (c >= t) {
                 ret += '\n';
                 c = 0;
             }
