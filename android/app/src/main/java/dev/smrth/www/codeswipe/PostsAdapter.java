@@ -43,6 +43,27 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
     }
 
+    // Prevent text overflow in CodeView
+    public static String calcOverflow(String str) {
+        int t = 45;
+        String ret = "";
+
+        int c = 0; // what col we're at
+        for (int i = 0; i < str.length(); i++) { // iter through str
+            if (str.charAt(i) == '\n') {
+                c = -1;
+            }
+            else if (c >= t) {
+                ret += '\n';
+                c = 0;
+            }
+            ret += str.charAt(i);
+            c++;
+        }
+
+        return ret;
+    }
+
     public PostsAdapter(QueryDocumentSnapshot[] dataSet) {
         posts = dataSet;
     }
@@ -69,7 +90,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         }
 
         v.author.setText(author);
-        v.snippet.setSource(doc.get("snippet").toString());
+        v.snippet.setSource(
+                PostsAdapter.calcOverflow(doc.get("snippet").toString())
+        );
         v.desc.setText(doc.get("description").toString());
         v.lang.setText(doc.get("language").toString());
 

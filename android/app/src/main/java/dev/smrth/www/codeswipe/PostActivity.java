@@ -149,6 +149,7 @@ public class PostActivity extends AppCompatActivity {
                     this, "Your description can't be longer than 120 characters (current: " + description.length() + ")",
                     Toast.LENGTH_LONG
             ).show();
+            return;
         }
 
         // Check # of lines
