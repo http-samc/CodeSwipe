@@ -61,6 +61,23 @@ public class HomeActivity extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     CollectionReference posts = db.collection("Posts/Each Post/Each Post");
 
+    static final String[] langs = {
+            "Java",
+            "Kotlin",
+            "C",
+            "C#",
+            "C++",
+            "Python",
+            "Ruby",
+            "JavaScript",
+            "Go",
+            "R",
+            "LaTex",
+            "MatLab",
+            "Bash",
+            "YAML"
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -174,6 +191,65 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        ImageView logoIV = findViewById(R.id.logoView);
+        logoIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Shared Prefs (local)
+                sp = getSharedPreferences(
+                        AuthActivity.PREFERENCES,
+                        Context.MODE_PRIVATE
+                );
+
+                SharedPreferences.Editor editor = sp.edit();
+
+                // Set up the alert builder
+                AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
+                builder.setTitle("Select Languages To View");
+
+                // All of this stuff loads the previously selected languages onto the dialog
+                ArrayList<String> langs = new ArrayList<>(Arrays.asList(HomeActivity.langs));
+                ArrayList<String> filter = HomeActivity.getLanguages(sp);
+
+                ArrayList<String> temp = filter;
+
+                boolean[] defaults = new boolean[langs.size()];
+
+                for (int i = 0; i < langs.size(); i++)
+                    defaults[i] = filter.contains(langs.get(i));
+
+                builder.setMultiChoiceItems(HomeActivity.langs, defaults, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                        if (!isChecked) {
+                            temp.remove(HomeActivity.langs[which]);
+                            return;
+                        }
+
+                        temp.add(HomeActivity.langs[which]);
+                    }
+                });
+
+                // Add OK and Cancel buttons
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        JSONArray toWrite = new JSONArray();
+                        for (String l: temp)
+                            toWrite.put(l);
+                        editor.putString(AuthActivity.langsKey, toWrite.toString());
+                        editor.apply();
+                        getFeed();
+                    }
+                });
+                builder.setNegativeButton("Cancel", null);
+
+                // Create and show the alert dialog
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            };
+        });
+
         // Render user info
         addUserInfo();
 
@@ -268,9 +344,51 @@ public class HomeActivity extends AppCompatActivity {
         followUser(doc.get("author").toString());
     }
 
+    // Star the most recently swiped GitHub gist
+    public void starGist(QueryDocumentSnapshot doc) {
+        String gist = doc.getString("gist");
+        String id = gist.replace("https://gist.github.com/", "");
+        this.starGist(id);
+    }
+
+    // Star any GitHub Gist
+    public void starGist(String id) {
+        String url = "https://api.github.com/gists/" + id + "/star";
+
+        StringRequest req = new StringRequest(Request.Method.PUT, url,
+                new Response.Listener<String>()
+                {
+                    @Override
+                    public void onResponse(String response) {
+                        // response
+                        Log.e("Response", response);
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("ERROR","error => "+error.toString());
+                    }
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String>  params = new HashMap<String, String>();
+
+                params.put("Accept", "application/vnd.github.v3+json");
+                params.put("Authorization", "token " + HomeActivity.token);
+
+                return params;
+            }
+        };
+        this.cue.add(req);
+    }
+
     // Get a feed of posts the user hasn't seen
     public void getFeed() {
         CardStackView postsView = findViewById(R.id.postsView);
+        postsView.removeAllViews(); // clears feed for refresh
         CardStackListener listener = new CardStackListener() {
 
             // Only event listener we need to implement for our purposes
@@ -285,6 +403,7 @@ public class HomeActivity extends AppCompatActivity {
                 // Handle liking action
                 if (direction == Direction.Right) {
                     followUser(doc);
+                    starGist(doc);
                     addToHistory(doc);
                 }
 
@@ -292,6 +411,7 @@ public class HomeActivity extends AppCompatActivity {
                 markPostAsRead(doc);
             }
 
+            // Other listeners
             public void onCardRewound() {}
             public void onCardCanceled() {}
             public void onCardAppeared(View view, int position) {}
@@ -308,6 +428,8 @@ public class HomeActivity extends AppCompatActivity {
 
         postsView.setLayoutManager(layoutManager);
 
+        ArrayList<String> langs = HomeActivity.getLanguages(this.sp);
+
         // Start off by getting all the posts we didn't make
         posts.whereNotEqualTo("author", HomeActivity.username)
                 .get()
@@ -316,11 +438,12 @@ public class HomeActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             // Create an arraylist (dynamically sized b/c we don't know len)
-                            // of posts we haven't viewed
+                            // of posts we haven't viewed && that match our accepted languages
                             ArrayList<QueryDocumentSnapshot> posts = new ArrayList<>();
                             for (QueryDocumentSnapshot doc : task.getResult()) {
+                                String lang = doc.getString("language");
                                 List<String> viewedBy = (List<String>) doc.get("viewedBy");
-                                if (!viewedBy.contains(HomeActivity.username))
+                                if (!viewedBy.contains(HomeActivity.username) && langs.contains(lang))
                                     posts.add(doc);
                             }
 
@@ -372,5 +495,35 @@ public class HomeActivity extends AppCompatActivity {
                 .document(doc.getId())
                 .update("viewedBy", viewedBy);
 
+    }
+
+    // Get all of our accepted languages as an ArrayList<?>::String
+    public static ArrayList<String> getLanguages(SharedPreferences sp) {
+
+        // Get languages supported
+        JSONArray langsJSON = null;
+        try {
+            langsJSON = new JSONArray(sp.getString(AuthActivity.langsKey, "[]"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        ArrayList<String> langs;
+        if (langsJSON.length() == 0)
+            langs = new ArrayList<>(Arrays.asList(HomeActivity.langs));
+        else {
+            langs = new ArrayList<>();
+            // Put our selected languages into the langs arraylist
+            for (int i = 0; i < langsJSON.length(); i++) {
+                try {
+                    String lang = langsJSON.getString(i);
+                    langs.add(lang);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return langs;
     }
 }
