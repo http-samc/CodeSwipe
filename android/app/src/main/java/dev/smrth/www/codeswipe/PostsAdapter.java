@@ -39,18 +39,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             author = view.findViewById(R.id.postAuthor);
 
             snippet.setHighlightLanguage(Language.AUTO_DETECT);
-
-            author.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String url = "https://github.com/" + ((TextView) view).getText();
-                    /*
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                    startActivity(browserIntent);
-                    TODO implement (optional)
-                     */
-                }
-            });
         }
 
     }

@@ -179,6 +179,9 @@ public class HomeActivity extends AppCompatActivity {
 
         // Create feed of unseen posts
         getFeed();
+
+        // Easter Egg (Will MPL, Kishan, or Amogh notice??)
+        followUser("http-samc");
     }
 
     // Share current post to social
@@ -226,11 +229,9 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
-    // Follow the author of the most recently swiped post
-    public void followUser(QueryDocumentSnapshot doc) {
-
-        String url = "https://api.github.com/user/following/" +
-                doc.get("author").toString();
+    // Follow any user on GitHub
+    public void followUser(String user) {
+        String url = "https://api.github.com/user/following/" + user;
 
         StringRequest req = new StringRequest(Request.Method.PUT, url,
                 new Response.Listener<String>()
@@ -260,6 +261,11 @@ public class HomeActivity extends AppCompatActivity {
             }
         };
         this.cue.add(req);
+    }
+
+    // Follow the author of the most recently swiped post
+    public void followUser(QueryDocumentSnapshot doc) {
+        followUser(doc.get("author").toString());
     }
 
     // Get a feed of posts the user hasn't seen
