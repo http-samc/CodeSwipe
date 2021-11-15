@@ -28,6 +28,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -149,6 +150,9 @@ public class HomeActivity extends AppCompatActivity {
                                 // Clear from instance vars
                                 HomeActivity.token = "";
                                 HomeActivity.username = "";
+
+                                // Sign out from Firebase
+                                FirebaseAuth.getInstance().signOut();
 
                                 // Send back to auth screen
                                 Intent intent = new Intent(HomeActivity.this, AuthActivity.class);

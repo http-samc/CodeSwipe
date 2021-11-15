@@ -28,9 +28,10 @@ import java.util.List;
 public class AuthActivity extends AppCompatActivity {
 
     Button btnLogin;
-    FirebaseAuth mAuth;
     FirebaseUser fUser;
 
+    static FirebaseAuth mAuth;
+    static OAuthProvider.Builder provider = OAuthProvider.newBuilder("github.com");
     static String token;
     static String username;
 
@@ -53,7 +54,6 @@ public class AuthActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                OAuthProvider.Builder provider = OAuthProvider.newBuilder("github.com");
 
                 List<String> scopes =
                         new ArrayList<String>() {
@@ -119,6 +119,7 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     // After we get Auth, write username and token to SharedPrefs and open home activity
+    // while also passing in mAuth (for signing out)
     private void openNextActivity() {
         Intent intent = new Intent(AuthActivity.this,HomeActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
