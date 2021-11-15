@@ -191,7 +191,7 @@ public class HomeActivity extends AppCompatActivity {
         QueryDocumentSnapshot doc = rva.getPost(pos);
 
         String msg = "Check out this awesome " + doc.get("language") + " snippet by "
-                + doc.get("author") + " on CodeSwipe:\n\n" + doc.get("snippet");
+                + doc.get("author") + " on CodeSwipe: " + doc.get("gist");
 
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
