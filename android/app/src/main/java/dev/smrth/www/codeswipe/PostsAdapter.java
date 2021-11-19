@@ -45,7 +45,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
     // Prevent text overflow in CodeView
     public static String calcOverflow(String str) {
-        int t = 45;
+        int t = 33;
         String ret = "";
 
         int c = 0; // what col we're at

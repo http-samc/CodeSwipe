@@ -68,7 +68,10 @@ public class HistoryActivity extends AppCompatActivity {
                 // Creating TV and formatting
                 TextView container = new TextView(this);
                 container.setTextAppearance(this, R.style.regTxt);
-                String html = "<b>" + author + "</b><p>" + post.getString("desc") + "</p>";
+                String desc = post.getString("desc");
+                if (desc.length() > 35)
+                    desc = desc.substring(0, 35) + "...";
+                String html = "<b>&#9" + author + "</b><p>     " + desc + "</p>";
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     container.setText(Html.fromHtml(html, Html.FROM_HTML_MODE_COMPACT));
                 } else {

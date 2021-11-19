@@ -10,6 +10,7 @@
     <LinearLayout
         android:layout_width="409dp"
         android:layout_height="657dp"
+        android:layout_marginTop="25dp"
         android:background="@color/background"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -70,7 +71,8 @@
             android:inputType="textMultiLine"
             android:padding="10dp"
             android:textColor="@color/regularText"
-            android:textColorHint="@color/regularText" />
+            android:textColorHint="@color/regularText"
+            android:textSize="14dp" />
 
         <EditText
             android:id="@+id/repoName"
@@ -86,7 +88,8 @@
             android:hint="GitHub Repo Name (optional)"
             android:padding="10dp"
             android:textColor="@color/regularText"
-            android:textColorHint="@color/regularText" />
+            android:textColorHint="@color/regularText"
+            android:textSize="14dp" />
 
         <Button
             android:id="@+id/postBtn"
