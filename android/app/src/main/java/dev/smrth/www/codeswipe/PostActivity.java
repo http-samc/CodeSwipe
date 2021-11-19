@@ -227,16 +227,13 @@ public class PostActivity extends AppCompatActivity {
     // Create a gist for the snippet
     public void createGist(Map<String, Object> doc) throws JSONException {
         String url = "https://api.github.com/gists";
-
         // Create request payload
         JSONObject fileDesc = new JSONObject();
         fileDesc.put(
                 "content",
                 doc.get("snippet")
         );
-
         JSONObject files = new JSONObject();
-
         int idx = 0; // Make it so idx + 1 is our file extension
         String language = doc.get("language").toString();
         for (int i = 0; i < PostActivity.toFileExt.length; i++) {
@@ -245,7 +242,6 @@ public class PostActivity extends AppCompatActivity {
                 break;
             }
         }
-
         files.put(
                 "CodeSwipeSnippet." + PostActivity.toFileExt[idx+1],
                 fileDesc
