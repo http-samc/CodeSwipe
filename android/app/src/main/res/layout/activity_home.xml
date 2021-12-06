@@ -42,7 +42,7 @@
 
     <com.yuyakaido.android.cardstackview.CardStackView
         android:id="@+id/postsView"
-        android:layout_width="280dp"
+        android:layout_width="match_parent"
         android:layout_height="500dp"
         android:background="@color/background"
         app:layout_constraintBottom_toTopOf="@+id/actionBar"

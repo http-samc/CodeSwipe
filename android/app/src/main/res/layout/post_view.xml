@@ -8,7 +8,7 @@
 
     <com.pddstudio.highlightjs.HighlightJsView
         android:id="@+id/postSnippet"
-        android:layout_width="match_parent"
+        android:layout_width="280dp"
         android:layout_height="375dp"
         android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -17,7 +17,7 @@
 
     <TextView
         android:id="@+id/postDesc"
-        android:layout_width="match_parent"
+        android:layout_width="280dp"
         android:layout_height="50dp"
         android:layout_marginStart="5dp"
         android:layout_marginTop="10dp"
